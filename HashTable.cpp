@@ -24,7 +24,6 @@ max = cap;
 * should return false
 */
 
-
 bool HashTable::insert(const std::string& key, const size_t& value) {
     if (contains(key)) {
         return false;
@@ -45,7 +44,6 @@ bool HashTable::insert(const std::string& key, const size_t& value) {
     }
 }
 
-
 /**
 * If the key is in the table, remove will “erase” the key-value pair from the
 * table. This might just be marking a bucket as empty-after-remove
@@ -62,11 +60,17 @@ bool HashTable::remove(const std::string& key) {
 * the table.
 */
 
-
 bool HashTable::contains(const string& key) const {
+    size_t home = hasher(key) % max;
+    if (table[home].isEmpty()) {
+        return false;
+    }
+    if (table[home].bucketKey == key) {
+        return true;
+    }
+    // you really shouldn't ever get here but if you somehow did then the key probably isnt there
     return false;
 }
-
 
 /**
 * If the key is found in the table, find will return the value associated with
@@ -192,7 +196,6 @@ HashTableBucket::HashTableBucket() {
     type = bucketType::ESS;
 }
 
-
 /**
 * A parameterized constructor could initialize the key and value, as
 * well as set the bucket type to NORMAL.
@@ -209,19 +212,16 @@ HashTableBucket::HashTableBucket(const std::string& key, const size_t& value) {
 * should then also mark the bucket as NORMAL.
 */
 
-
 void HashTableBucket::load(const std::string& key, const size_t& value) {
     bucketKey = key;
     bucketValue = value;
     type = bucketType::NORMAL;
 }
 
-
 /**
 * This method would return whether the bucket is empty, regardless of
 * if it has had data placed in it or not.
 */
-
 
 bool HashTableBucket::isEmpty() const {
     if (type != bucketType::NORMAL) {
@@ -229,7 +229,6 @@ bool HashTableBucket::isEmpty() const {
     }
     return false;
 }
-
 
 /**
 * The stream insertion operator could be overloaded to print the
