@@ -16,8 +16,8 @@ class HashTableBucket {
     public:
 
         bucketType type;
-        std::string key;
-        size_t value;
+        std::string bucketKey;
+        size_t bucketValue;
 
         HashTableBucket();
 

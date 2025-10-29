@@ -20,7 +20,7 @@ max = cap;
 /**
 * Insert a new key-value pair into the table. Duplicate keys are NOT allowed. The
 * method should return true if the insertion was successful. If the insertion was
-* unsucessful, such as when a duplicate is attempted to be inserted, the method
+* unsuccessful, such as when a duplicate is attempted to be inserted, the method
 * should return false
 */
 
@@ -48,7 +48,10 @@ bool HashTable::remove(const std::string& key) {
 
 /*
 bool HashTable::contains(const string& key) const {
-
+    for (size_t i = 0; i < table.size(); i++) {
+        if
+    }
+    return false;
 }
 */
 
@@ -70,14 +73,13 @@ std::optional<size_t> HashTable::get(const string& key) const {
 
 /**
 * The bracket operator lets us access values in the map using a familiar syntax,
-* similar to C++ std::map or Python dictionaries. It behaves like get, returnin
+* similar to C++ std::map or Python dictionaries. It behaves like get, returning
 * the value associated with a given key:
  int idNum = hashTable[“James”];
-* Unlike get, however, the bracker operator returns a reference to the value,
+* Unlike get, however, the bracket operator returns a reference to the value,
 * which allows assignment:
- hashTable[“James”] = 1234;
- If the key is not
-* in the table, returning a valid reference is impossible. You may choose to
+* hashTable[“James”] = 1234;
+* If the key is not in the table, returning a valid reference is impossible. You may choose to
 * throw an exception in this case, but for our implementation, the situation
 * results in undefined behavior. Simply put, you do not need to address attempts
 * to access keys not in the table inside the bracket operator method.
@@ -91,7 +93,7 @@ size_t& HashTable::operator[](const string& key) {
 
 /**
 * keys returns a std::vector (C++ version of ArrayList, or simply list/array)
-* with all of the keys currently in the table. The length of the vector should be
+* with all the keys currently in the table. The length of the vector should be
 * the same as the size of the hash table.
 */
 
@@ -104,11 +106,10 @@ std::vector<std::string> HashTable::keys() const {
 /**
 * alpha returns the current load factor of the table, or size/capacity. Since
 * alpha returns a double,make sure to properly cast the size and capacity, which
-* are size_t, to avoid size_teger division. You can cast a size_t num to a double
+* are size_t, to avoid size_t division. You can cast a size_t num to a double
 * in C++ like:
- static_cast<double>(num)
- The time complexity
-* for this method must be O(1).
+* static_cast<double>(num)
+* The time complexity for this method must be O(1).
 */
 
 /*
@@ -174,7 +175,7 @@ size_t HashTable::probe(size_t home, int i) const {
 */
 
 HashTableBucket::HashTableBucket() {
-    value = 0;
+    bucketValue = 0;
     type = bucketType::ESS;
 }
 
@@ -185,8 +186,8 @@ HashTableBucket::HashTableBucket() {
 */
 
 HashTableBucket::HashTableBucket(const std::string& key, const size_t& value) {
-    this->key = key;
-    this->value = value;
+    bucketKey = key;
+    bucketValue = value;
     type = bucketType::NORMAL;
 }
 
@@ -206,11 +207,14 @@ void HashTableBucket::load(const std::string& key, const size_t& value) {
 * if it has had data placed in it or not.
 */
 
-/*
-bool HashTableBucket::isEmpty() const {
 
+bool HashTableBucket::isEmpty() const {
+    if (type != bucketType::NORMAL && bucketValue && bucketKey.empty()) {
+        return true;
+    }
+    return false;
 }
-*/
+
 
 /**
 * The stream insertion operator could be overloaded to print the
