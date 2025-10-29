@@ -27,6 +27,7 @@ class HashTableBucket {
         void load(const std::string& key, const size_t& value);
         bool isEmpty() const;
         friend ostream& operator<<(ostream& os, const HashTableBucket& bucket);
+        bool isESS() const;
 
 };
 
@@ -52,5 +53,5 @@ public:
         size_t size() const;
         friend ostream& operator<<(ostream& os, const HashTable& ht);
         size_t probe(size_t home, int i) const;
-
+        std::hash<std::string> hasher;
 };

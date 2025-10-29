@@ -24,11 +24,27 @@ max = cap;
 * should return false
 */
 
-/*
-bool HashTable::insert(const std::string$ key, const size_t& value) {
 
+bool HashTable::insert(const std::string& key, const size_t& value) {
+    if (contains(key)) {
+        return false;
+    }
+    size_t home = hasher(key) % max;
+    if (table[home].isEmpty()) {
+        table[home].load(key, value);
+        filled++;
+        return true;
+    }
+    for (int i = 0; i < max - 1; i++) {
+        auto hole = probe(home, i);
+        if (table[hole].isEmpty()) {
+            table[hole].load(key, value);
+            filled++;
+            return true;
+        }
+    }
 }
-*/
+
 
 /**
 * If the key is in the table, remove will “erase” the key-value pair from the
@@ -46,14 +62,11 @@ bool HashTable::remove(const std::string& key) {
 * the table.
 */
 
-/*
+
 bool HashTable::contains(const string& key) const {
-    for (size_t i = 0; i < table.size(); i++) {
-        if
-    }
     return false;
 }
-*/
+
 
 /**
 * If the key is found in the table, find will return the value associated with
@@ -196,11 +209,13 @@ HashTableBucket::HashTableBucket(const std::string& key, const size_t& value) {
 * should then also mark the bucket as NORMAL.
 */
 
-/*
-void HashTableBucket::load(const std::string& key, const size_t& value) {
 
+void HashTableBucket::load(const std::string& key, const size_t& value) {
+    bucketKey = key;
+    bucketValue = value;
+    type = bucketType::NORMAL;
 }
-*/
+
 
 /**
 * This method would return whether the bucket is empty, regardless of
@@ -209,7 +224,7 @@ void HashTableBucket::load(const std::string& key, const size_t& value) {
 
 
 bool HashTableBucket::isEmpty() const {
-    if (type != bucketType::NORMAL && bucketValue && bucketKey.empty()) {
+    if (type != bucketType::NORMAL) {
         return true;
     }
     return false;
@@ -227,3 +242,10 @@ ostream& operator<<(ostream& os, const HashTableBucket& bucket) {
 
 }
 */
+
+bool HashTableBucket::isESS() const {
+    if (type == bucketType::ESS) {
+        return true;
+    }
+    return false;
+}

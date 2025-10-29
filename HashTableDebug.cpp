@@ -5,7 +5,14 @@
  */
 #include <iostream>
 
+#include "HashTable.h"
+
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+
+    HashTable ht;
+
+    ht.insert("hello", 1);
+    ht.insert("hello", 2);
+
     return 0;
 }
