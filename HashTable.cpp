@@ -2,17 +2,20 @@
  * HashTable.cpp
  */
 
+#include "HashTable.h"
 
 /**
 * Only a single constructor that takes an initial capacity for the table is
 * necessary. If no capacity is given, it defaults to 8 initially
 */
 
-/*
-HashTable::HashTable(size_t initCapacity = 8) {
+HashTable::HashTable(size_t cap) {
+
+table.resize(cap);
+filled = 0;
+max = cap;
 
 }
-*/
 
 /**
 * Insert a new key-value pair into the table. Duplicate keys are NOT allowed. The
@@ -142,18 +145,16 @@ size_t HashTable::size() const {
 * but not the definition. In addition, operator<< is not a method of HashTable,
 * so do not put HashTable:: before it when defining it. operator<< will allow us
 * to print the contents of our hash table using the normal syntax:
- cout <<
-* myHashTable << endl;
- You should only print the buckets which are occupied,
+* cout << myHashTable << endl;
+* You should only print the buckets which are occupied,
 * and along with each item you will print which bucket (the index of the bucket)
 * the item is in. To make it easy, I suggest creating a helper method called
 * something like printMe() that returns a string of everything in the table. An
 * example which uses open addressing for collision resolution could print
 * something like:
- Bucket 5: <James, 4815>
- Bucket 2: <Juliet, 1623>
- Bucket
-* 11: <Hugo, 42108>
+* Bucket 5: <James, 4815>
+* Bucket 2: <Juliet, 1623>
+* Bucket 11: <Hugo, 42108>
 */
 
 /*
@@ -162,29 +163,32 @@ ostream& operator<<(ostream& os, const HashTable& hashTable) {
 }
 */
 
+size_t HashTable::probe(size_t home, int i) const {
+    return (home + i + 1) % table.size();
+}
+
 //BUCKET
 
 /**
 * The default constructor can simply set the bucket type to ESS.
- *
 */
 
-/*
 HashTableBucket::HashTableBucket() {
-
+    value = 0;
+    type = bucketType::ESS;
 }
-*/
+
 
 /**
 * A parameterized constructor could initialize the key and value, as
 * well as set the bucket type to NORMAL.
 */
 
-/*
 HashTableBucket::HashTableBucket(const std::string& key, const size_t& value) {
-
+    this->key = key;
+    this->value = value;
+    type = bucketType::NORMAL;
 }
-*/
 
 /**
 * A load method could load the key-value pair into the bucket, which
