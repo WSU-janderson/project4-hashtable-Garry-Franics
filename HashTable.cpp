@@ -72,6 +72,12 @@ bool HashTable::contains(const string& key) const {
     if (table[home].bucketKey == key) {
         return true;
     }
+    for (int i = 0; i < max - 1; i++) {
+        auto hole = probe(home, i);
+        if (table[hole].bucketKey == key) {
+            return true;
+        }
+    }
     // you really shouldn't ever get here but if you somehow did then the key probably isn't there
     return false;
 }
