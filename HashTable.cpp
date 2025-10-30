@@ -49,11 +49,15 @@ bool HashTable::insert(const std::string& key, const size_t& value) {
 * table. This might just be marking a bucket as empty-after-remove
 */
 
-/*
 bool HashTable::remove(const std::string& key) {
-
+    if (contains(key)) {
+        size_t home = hasher(key) % max;
+        table[home].load("", 0);
+        table[home].type = bucketType::EAR;
+        filled--;
+    }
+    return false;
 }
-*/
 
 /**
 * contains returns true if the key is in the table and false if the key is not in
@@ -68,7 +72,7 @@ bool HashTable::contains(const string& key) const {
     if (table[home].bucketKey == key) {
         return true;
     }
-    // you really shouldn't ever get here but if you somehow did then the key probably isnt there
+    // you really shouldn't ever get here but if you somehow did then the key probably isn't there
     return false;
 }
 
