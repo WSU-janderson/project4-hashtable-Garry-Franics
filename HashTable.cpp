@@ -66,9 +66,6 @@ bool HashTable::remove(const std::string& key) {
 
 bool HashTable::contains(const string& key) const {
     size_t home = hasher(key) % max;
-    if (table[home].isEmpty()) {
-        return false;
-    }
     if (table[home].bucketKey == key) {
         return true;
     }
@@ -78,7 +75,7 @@ bool HashTable::contains(const string& key) const {
             return true;
         }
     }
-    // you really shouldn't ever get here but if you somehow did then the key probably isn't there
+
     return false;
 }
 
