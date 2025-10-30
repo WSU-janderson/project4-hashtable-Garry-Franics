@@ -4,7 +4,6 @@
  * Write your tests in this file
  */
 #include <iostream>
-
 #include "HashTable.h"
 
 int main() {
@@ -13,8 +12,9 @@ int main() {
 
     ht.insert("world",3);
     ht.insert("hello", 2);
-    ht.remove("world");
-    ht["hello"] = 547;
+
+    cout << ht.size() << endl;
+    cout << ht.capacity() << endl;
 
     return 0;
 }

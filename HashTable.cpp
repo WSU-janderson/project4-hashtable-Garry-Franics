@@ -170,22 +170,18 @@ double HashTable::alpha() const {
 * complexity for this algorithm must be O(1).
 */
 
-/*
 size_t HashTable::capacity() const {
-
+    return max;
 }
-*/
 
 /**
 * The size method returns how many key-value pairs are in the hash table. The
 * time complexity for this method must be O(1)
 */
 
-/*
 size_t HashTable::size() const {
-
+    return filled;
 }
-*/
 
 /**
 * operator<< is another example of operator overloading in C++, similar to
