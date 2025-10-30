@@ -3,6 +3,7 @@
  */
 
 #include "HashTable.h"
+#include <exception>
 
 /**
 * Only a single constructor that takes an initial capacity for the table is
@@ -88,7 +89,6 @@ bool HashTable::contains(const string& key) const {
             return true;
         }
     }
-
     return false;
 }
 
@@ -122,11 +122,21 @@ std::optional<size_t> HashTable::get(const string& key) const {
 * to access keys not in the table inside the bracket operator method.
 */
 
-/*
 size_t& HashTable::operator[](const string& key) {
-
+    if (contains(key)) {
+        size_t home = hasher(key) % max;
+        if (table[home].bucketKey == key) {
+            return table[home].bucketValue;
+        }
+        for (int i = 0; i < max - 1; i++) {
+            auto hole = probe(home, i);
+            if (table[hole].bucketKey == key) {
+                return table[hole].bucketValue;
+            }
+        }
+    }
+    throw exception();
 }
-*/
 
 /**
 * keys returns a std::vector (C++ version of ArrayList, or simply list/array)

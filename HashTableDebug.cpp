@@ -13,7 +13,8 @@ int main() {
 
     ht.insert("world",3);
     ht.insert("hello", 2);
-    ht.remove("hello");
+    ht.remove("world");
+    ht["hello"] = 547;
 
     return 0;
 }
