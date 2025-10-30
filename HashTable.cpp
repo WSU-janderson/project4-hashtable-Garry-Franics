@@ -42,6 +42,7 @@ bool HashTable::insert(const std::string& key, const size_t& value) {
             return true;
         }
     }
+    return false;
 }
 
 /**
@@ -52,9 +53,21 @@ bool HashTable::insert(const std::string& key, const size_t& value) {
 bool HashTable::remove(const std::string& key) {
     if (contains(key)) {
         size_t home = hasher(key) % max;
-        table[home].load("", 0);
-        table[home].type = bucketType::EAR;
-        filled--;
+        if (table[home].bucketKey == key) {
+            table[home].load("", 0);
+            table[home].type = bucketType::EAR;
+            filled--;
+            return true;
+        }
+        for (int i = 0; i < max - 1; i++) {
+            auto hole = probe(home, i);
+            if (table[hole].bucketKey == key) {
+                table[hole].load("", 0);
+                table[hole].type = bucketType::EAR;
+                filled--;
+                return true;
+            }
+        }
     }
     return false;
 }

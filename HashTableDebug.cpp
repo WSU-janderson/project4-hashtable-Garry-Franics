@@ -14,7 +14,6 @@ int main() {
     ht.insert("world",3);
     ht.insert("hello", 2);
     ht.remove("hello");
-    cout << ht.contains("hello");
 
     return 0;
 }
