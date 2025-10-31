@@ -15,7 +15,7 @@ int main() {
     ht.insert("world",3);
     ht.insert("hello", 2);
 
-    cout << ht.alpha() << endl;
+    optional<size_t> got = ht.get("void");
 
     return 0;
 }

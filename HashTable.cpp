@@ -98,17 +98,25 @@ bool HashTable::contains(const string& key) const {
 * If the key is found in the table, find will return the value associated with
 * that key. If the key is not in the table, find will return something called
 * nullopt, which is a special value in C++. The find method returns an
-* optional<int>, which is a way to denote a method might not have a valid value
+* optional<size_t>, which is a way to denote a method might not have a valid value
 * to return. This approach is nicer than designating a special value, like -1, to
 * signify the return value is invalid. It's also much better than throwing an
 * exception if the key is not found.
 */
 
-/*
 std::optional<size_t> HashTable::get(const string& key) const {
-
+    size_t home = hasher(key) % max;
+    if (table[home].bucketKey == key) {
+        return table[home].bucketValue;
+    }
+    for (int i = 0; i < max - 1; i++) {
+        auto hole = probe(home, i);
+        if (table[hole].bucketKey == key) {
+            return table[hole].bucketValue;
+        }
+    }
+    return nullopt;
 }
-*/
 
 /**
 * The bracket operator lets us access values in the map using a familiar syntax,
@@ -151,9 +159,8 @@ std::vector<std::string> HashTable::keys() const {
     vector<string> keys;
     keys.reserve(max);
     for (int i = 0; i < max; i++) {
-        auto hole = probe(0, i);
-        if (!table[hole].isEmpty()) {
-            keys.push_back(table[hole].bucketKey);
+        if (!table[i].isEmpty()) {
+            keys.push_back(table[i].bucketKey);
         }
     }
     return keys;
@@ -173,6 +180,7 @@ std::vector<std::string> HashTable::keys() const {
 double HashTable::alpha() const {
     return static_cast<double>(filled) / static_cast<double>(max);
 }
+
 
 
 /**
