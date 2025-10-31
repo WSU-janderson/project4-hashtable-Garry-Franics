@@ -169,11 +169,11 @@ std::vector<std::string> HashTable::keys() const {
 * The time complexity for this method must be O(1).
 */
 
-/*
-double HashTable::alpha() const {
 
+double HashTable::alpha() const {
+    return static_cast<double>(filled) / static_cast<double>(max);
 }
-*/
+
 
 /**
 * capacity returns how many buckets in total are in the hash table. The time
