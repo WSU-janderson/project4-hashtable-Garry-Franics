@@ -5,6 +5,8 @@
 #include "HashTable.h"
 #include <exception>
 
+using namespace std;
+
 /**
 * Only a single constructor that takes an initial capacity for the table is
 * necessary. If no capacity is given, it defaults to 8 initially
@@ -112,7 +114,7 @@ std::optional<size_t> HashTable::get(const string& key) const {
 * The bracket operator lets us access values in the map using a familiar syntax,
 * similar to C++ std::map or Python dictionaries. It behaves like get, returning
 * the value associated with a given key:
- int idNum = hashTable[“James”];
+* int idNum = hashTable[“James”];
 * Unlike get, however, the bracket operator returns a reference to the value,
 * which allows assignment:
 * hashTable[“James”] = 1234;
@@ -144,11 +146,19 @@ size_t& HashTable::operator[](const string& key) {
 * the same as the size of the hash table.
 */
 
-/*
-std::vector<std::string> HashTable::keys() const {
 
+std::vector<std::string> HashTable::keys() const {
+    vector<string> keys;
+    keys.reserve(max);
+    for (int i = 0; i < max; i++) {
+        auto hole = probe(0, i);
+        if (!table[hole].isEmpty()) {
+            keys.push_back(table[hole].bucketKey);
+        }
+    }
+    return keys;
 }
-*/
+
 
 /**
 * alpha returns the current load factor of the table, or size/capacity. Since

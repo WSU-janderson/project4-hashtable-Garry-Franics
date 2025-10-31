@@ -6,6 +6,8 @@
 #include <iostream>
 #include "HashTable.h"
 
+using namespace std;
+
 int main() {
 
     HashTable ht;
@@ -15,6 +17,11 @@ int main() {
 
     cout << ht.size() << endl;
     cout << ht.capacity() << endl;
+    vector<string> keys = ht.keys();
+    size_t size = keys.size();
+    for (size_t i = 0; i < size; i++) {
+        cout << keys[i] << endl;
+    }
 
     return 0;
 }
