@@ -4,6 +4,7 @@
 
 #include "HashTable.h"
 #include <exception>
+#include <string>
 
 using namespace std;
 
@@ -219,11 +220,21 @@ size_t HashTable::size() const {
 * Bucket 11: <Hugo, 42108>
 */
 
-/*
-ostream& operator<<(ostream& os, const HashTable& hashTable) {
-
+std::string HashTable::printMe(int i) const {
+    if (!table[i].isEmpty()) {
+        string s = "Bucket " + to_string(i) + ": <" + table[i].bucketKey + ", " + to_string(table[i].bucketValue) + ">";
+        return s;
+    }
+    return "";
 }
-*/
+
+ostream& operator<<(ostream& os, const HashTable& hashTable) {
+    for (int i = 0; i < hashTable.capacity(); i++) {
+        if (!hashTable.printMe(i).empty())
+            os << hashTable.printMe(i) << endl;
+    }
+    return os;
+}
 
 size_t HashTable::probe(size_t home, int i) const {
     return (home + i + 1) % table.size();
@@ -280,15 +291,20 @@ bool HashTableBucket::isEmpty() const {
 * instead.
 */
 
+
+//TODO: also this one
 /*
 ostream& operator<<(ostream& os, const HashTableBucket& bucket) {
 
 }
 */
 
+//I dont think im going to be using this
+/*
 bool HashTableBucket::isESS() const {
     if (type == bucketType::ESS) {
         return true;
     }
     return false;
 }
+*/
