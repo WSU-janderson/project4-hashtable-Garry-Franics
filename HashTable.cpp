@@ -15,9 +15,9 @@ using namespace std;
 
 HashTable::HashTable(size_t cap) {
 
-table.resize(cap);
-filled = 0;
-max = cap;
+    table.resize(cap);
+    filled = 0;
+    max = cap;
 
 }
 
@@ -291,20 +291,9 @@ bool HashTableBucket::isEmpty() const {
 * instead.
 */
 
-
-//TODO: also this one
-/*
 ostream& operator<<(ostream& os, const HashTableBucket& bucket) {
-
-}
-*/
-
-//I dont think im going to be using this
-/*
-bool HashTableBucket::isESS() const {
-    if (type == bucketType::ESS) {
-        return true;
+    if (!bucket.isEmpty()) {
+        os << "Bucket: <" + bucket.bucketKey + ", " + to_string(bucket.bucketValue) + ">";
     }
-    return false;
+    return os;
 }
-*/
