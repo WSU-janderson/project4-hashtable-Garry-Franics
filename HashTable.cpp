@@ -52,9 +52,9 @@ bool HashTable::insert(const std::string& key, const size_t& value) {
         // Increase size counter
         filled++;
         // If the table is full it gets expanded
-        if (filled == max) {
+        if (alpha() >= 0.5) {
             // Increase capacity counter
-            max++;
+            max *= 2;
             // Increase capacity
             table.resize(max);
         }
@@ -71,9 +71,9 @@ bool HashTable::insert(const std::string& key, const size_t& value) {
             // Increase size counter
             filled++;
             // If the table is full it gets expanded
-            if (filled == max) {
+            if (alpha() >= 0.5) {
                 // Increase capacity counter
-                max++;
+                max *= 2;
                 // Increase capacity
                 table.resize(max);
             }
