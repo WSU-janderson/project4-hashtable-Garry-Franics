@@ -1,6 +1,14 @@
-/**
- * HashTable.cpp
- */
+/*-------------------------------------------------------------------------------------------
+* Name: Garry Francis
+* Project: HashTable
+*
+* This is the cpp file for the HashTable and HashTableBucket class. It contains the constructors
+* and all the function definitions. This file includes: The HashTable constructor, the insert
+* function, the remove function, the contains function, the get function, the [] operator
+* override, the keys function, the alpha function, the capacity function, the size function,
+* the printMe function, the << operator overrides, the probe function, the HashTableBucket
+* constructors, the load function, and the isEmpty function.
+* -----------------------------------------------------------------------------------------*/
 
 #include "HashTable.h"
 #include <exception>
@@ -13,12 +21,14 @@ using namespace std;
 * necessary. If no capacity is given, it defaults to 8 initially
 */
 
+// Constructor for the HashTable
 HashTable::HashTable(size_t cap) {
-
+    // Sets capacity
     table.resize(cap);
+    // Tracks size
     filled = 0;
+    // Tracks capacity
     max = cap;
-
 }
 
 /**
@@ -29,23 +39,49 @@ HashTable::HashTable(size_t cap) {
 */
 
 bool HashTable::insert(const std::string& key, const size_t& value) {
+    // If key is in the table, it doesn't get added
     if (contains(key)) {
         return false;
     }
+    // Hash the key
     size_t home = hasher(key) % max;
+    // If the home index is open
     if (table[home].isEmpty()) {
+        // Load in the key pair
         table[home].load(key, value);
+        // Increase size counter
         filled++;
+        // If the table is full it gets expanded
+        if (filled == max) {
+            // Increase capacity counter
+            max++;
+            // Increase capacity
+            table.resize(max);
+        }
         return true;
     }
+    // You can't insert at the home index
     for (int i = 0; i < max - 1; i++) {
+        // Begin the probe
         auto hole = probe(home, i);
+        // If the probed index is open
         if (table[hole].isEmpty()) {
+            // Load in the key pair
             table[hole].load(key, value);
+            // Increase size counter
             filled++;
+            // If the table is full it gets expanded
+            if (filled == max) {
+                // Increase capacity counter
+                max++;
+                // Increase capacity
+                table.resize(max);
+            }
             return true;
         }
     }
+    // I'm not sure that it's possible to reach this return but if it's not here I get a warning
+    // and I don't like warnings
     return false;
 }
 
@@ -55,24 +91,37 @@ bool HashTable::insert(const std::string& key, const size_t& value) {
 */
 
 bool HashTable::remove(const std::string& key) {
+    // If the key is in the table it gets removed
     if (contains(key)) {
+        // Hash the key
         size_t home = hasher(key) % max;
+        // If the key is at the home index
         if (table[home].bucketKey == key) {
+            // Set the key to a blank string and the value to 0
             table[home].load("", 0);
+            // Set the bucket type to Empty After Removal
             table[home].type = bucketType::EAR;
+            // Decrease size counter
             filled--;
             return true;
         }
+        // If the key is not at the home index
         for (int i = 0; i < max - 1; i++) {
+            // Begin the probe
             auto hole = probe(home, i);
+            // If the key is at the probed index
             if (table[hole].bucketKey == key) {
+                // Set the key to a blank string and the value to 0
                 table[hole].load("", 0);
+                // Set the bucket type to Empty After Removal
                 table[hole].type = bucketType::EAR;
+                // Decrease size counter
                 filled--;
                 return true;
             }
         }
     }
+    // The key was not in the table
     return false;
 }
 
@@ -82,16 +131,22 @@ bool HashTable::remove(const std::string& key) {
 */
 
 bool HashTable::contains(const string& key) const {
+    // Hash the key
     size_t home = hasher(key) % max;
+    // If the key is at the home index
     if (table[home].bucketKey == key) {
         return true;
     }
+    // If the key is not at the home index
     for (int i = 0; i < max - 1; i++) {
+        // Begin the probe
         auto hole = probe(home, i);
+        // If the key is at the probed index
         if (table[hole].bucketKey == key) {
             return true;
         }
     }
+    // The key was not in the table
     return false;
 }
 
@@ -106,16 +161,27 @@ bool HashTable::contains(const string& key) const {
 */
 
 std::optional<size_t> HashTable::get(const string& key) const {
-    size_t home = hasher(key) % max;
-    if (table[home].bucketKey == key) {
-        return table[home].bucketValue;
-    }
-    for (int i = 0; i < max - 1; i++) {
-        auto hole = probe(home, i);
-        if (table[hole].bucketKey == key) {
-            return table[hole].bucketValue;
+    // If the key is in the table the value is retrieved
+    if (contains(key)) {
+        // Hash the key
+        size_t home = hasher(key) % max;
+        // If the key is at the home index
+        if (table[home].bucketKey == key) {
+            // Return the key value
+            return table[home].bucketValue;
+        }
+        // If the key is not at the home index
+        for (int i = 0; i < max - 1; i++) {
+            // Begin the probe
+            auto hole = probe(home, i);
+            // If the key is at the probed index
+            if (table[hole].bucketKey == key) {
+                // Return the key value
+                return table[hole].bucketValue;
+            }
         }
     }
+    // The key was not in the table, return nullopt
     return nullopt;
 }
 
@@ -134,18 +200,27 @@ std::optional<size_t> HashTable::get(const string& key) const {
 */
 
 size_t& HashTable::operator[](const string& key) {
+    // If the table contains the key, reference the value
     if (contains(key)) {
+        // Hash the key
         size_t home = hasher(key) % max;
+        // If the key is at the home index
         if (table[home].bucketKey == key) {
+            // Return the key value
             return table[home].bucketValue;
         }
+        // If the key is not at the home index
         for (int i = 0; i < max - 1; i++) {
+            // Begin the probe
             auto hole = probe(home, i);
+            // If the key is at the probed index
             if (table[hole].bucketKey == key) {
+                // Return the key value
                 return table[hole].bucketValue;
             }
         }
     }
+    // The key is not in the table, throw exception
     throw exception();
 }
 
@@ -155,18 +230,22 @@ size_t& HashTable::operator[](const string& key) {
 * the same as the size of the hash table.
 */
 
-
 std::vector<std::string> HashTable::keys() const {
+    // Make a vector for the keys
     vector<string> keys;
+    // Give the vector space for the keys
     keys.reserve(max);
+    // Check each bucket for a key
     for (int i = 0; i < max; i++) {
+        // If the bucket is not empty
         if (!table[i].isEmpty()) {
+            // Add key to the vector
             keys.push_back(table[i].bucketKey);
         }
     }
+    // Return the vector of keys
     return keys;
 }
-
 
 /**
 * alpha returns the current load factor of the table, or size/capacity. Since
@@ -177,12 +256,10 @@ std::vector<std::string> HashTable::keys() const {
 * The time complexity for this method must be O(1).
 */
 
-
 double HashTable::alpha() const {
+    // Divide size by capacity
     return static_cast<double>(filled) / static_cast<double>(max);
 }
-
-
 
 /**
 * capacity returns how many buckets in total are in the hash table. The time
@@ -190,6 +267,7 @@ double HashTable::alpha() const {
 */
 
 size_t HashTable::capacity() const {
+    // Return capacity
     return max;
 }
 
@@ -199,6 +277,7 @@ size_t HashTable::capacity() const {
 */
 
 size_t HashTable::size() const {
+    // Return size
     return filled;
 }
 
@@ -221,21 +300,31 @@ size_t HashTable::size() const {
 */
 
 std::string HashTable::printMe(int i) const {
+    // If the bucket is not empty
     if (!table[i].isEmpty()) {
+        // Incredibly long line that puts a whole bucket into a string
         string s = "Bucket " + to_string(i) + ": <" + table[i].bucketKey + ", " + to_string(table[i].bucketValue) + ">";
+        // Return the string
         return s;
     }
+    // The bucket was empty, return an empty string
     return "";
 }
 
 ostream& operator<<(ostream& os, const HashTable& hashTable) {
+    // For the capacity of the table
     for (int i = 0; i < hashTable.capacity(); i++) {
-        if (!hashTable.printMe(i).empty())
+        // If the printMe string isn't empty
+        if (!hashTable.printMe(i).empty()) {
+            // Print the printMe string
             os << hashTable.printMe(i) << endl;
+        }
     }
+    // Returns the ostream... I guess.
     return os;
 }
 
+//TODO: make this semi-random probing
 size_t HashTable::probe(size_t home, int i) const {
     return (home + i + 1) % table.size();
 }
@@ -247,7 +336,9 @@ size_t HashTable::probe(size_t home, int i) const {
 */
 
 HashTableBucket::HashTableBucket() {
+    // Sets value to zero
     bucketValue = 0;
+    // Sets type to Empty Since Start
     type = bucketType::ESS;
 }
 
@@ -257,8 +348,11 @@ HashTableBucket::HashTableBucket() {
 */
 
 HashTableBucket::HashTableBucket(const std::string& key, const size_t& value) {
+    // Sets the key
     bucketKey = key;
+    // Sets the value
     bucketValue = value;
+    // Sets the type to normal
     type = bucketType::NORMAL;
 }
 
@@ -268,8 +362,11 @@ HashTableBucket::HashTableBucket(const std::string& key, const size_t& value) {
 */
 
 void HashTableBucket::load(const std::string& key, const size_t& value) {
+    // Sets the key
     bucketKey = key;
+    // Sets the value
     bucketValue = value;
+    // Sets the type to normal
     type = bucketType::NORMAL;
 }
 
@@ -279,9 +376,12 @@ void HashTableBucket::load(const std::string& key, const size_t& value) {
 */
 
 bool HashTableBucket::isEmpty() const {
+    // If the type is not normal then its either ESS or EAR, both of which are empty
     if (type != bucketType::NORMAL) {
+        // It's empty
         return true;
     }
+    // Its normal, so not empty
     return false;
 }
 
@@ -291,6 +391,7 @@ bool HashTableBucket::isEmpty() const {
 * instead.
 */
 
+//TODO: ask what this function actually does
 ostream& operator<<(ostream& os, const HashTableBucket& bucket) {
     if (!bucket.isEmpty()) {
         os << "Bucket: <" + bucket.bucketKey + ", " + to_string(bucket.bucketValue) + ">";
