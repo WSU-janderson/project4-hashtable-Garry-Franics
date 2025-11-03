@@ -4,10 +4,10 @@
 *
 * This is the cpp file for the HashTable and HashTableBucket class. It contains the constructors
 * and all the function definitions. This file includes: The HashTable constructor, the insert
-* function, the remove function, the contains function, the get function, the [] operator
-* override, the keys function, the alpha function, the capacity function, the size function,
-* the printMe function, the << operator overrides, the probe function, the HashTableBucket
-* constructors, the load function, and the isEmpty function.
+* function, the resizeTable the remove function, the contains function, the get function,
+* the [] operator override, the keys function, the alpha function, the capacity function, the size
+* function, the printMe function, the << operator override, the probe function, the offsetShuffle
+* function, the HashTableBucket constructors, the load function, the isEmpty function.
 * -----------------------------------------------------------------------------------------*/
 
 #include "HashTable.h"
@@ -87,11 +87,16 @@ void HashTable::resizeTable() {
     max *= 2;
     // Increase capacity
     vector <HashTableBucket> oldTable = table;
+    // Shuffle the offset values
     offsets = offsetShuffle(max);
+    // Clear the table
     table.clear();
+    // Set the table capacity
     table.resize(max);
+    // Set filled to 0
     filled = 0;
-    for (int i = 0; i < oldTable.size(); i++) {
+    // Re-hash every value from the old table into the expanded one
+    for (int i = 0; i < oldTable.size(); i++) { // NOLINT(*-loop-convert)
         if (!oldTable[i].isEmpty()) {
             this->insert(oldTable[i].bucketKey, oldTable[i].bucketValue);
         }
@@ -118,6 +123,7 @@ bool HashTable::remove(const std::string& key) {
             filled--;
             return true;
         }
+        // If EES, stop trying
         if (table[home].type == bucketType::ESS) {
             return false;
         }
@@ -135,6 +141,7 @@ bool HashTable::remove(const std::string& key) {
                 filled--;
                 return true;
             }
+            // If ESS, stop trying
             if (table[hole].type == bucketType::ESS) {
                 return false;
             }
@@ -156,6 +163,7 @@ bool HashTable::contains(const string& key) const {
     if (table[home].bucketKey == key) {
         return true;
     }
+    // If ESS, stop trying
     if (table[home].type == bucketType::ESS) {
         return false;
     }
@@ -167,6 +175,7 @@ bool HashTable::contains(const string& key) const {
         if (table[hole].bucketKey == key) {
             return true;
         }
+        // If ESS, stop trying
         if (table[hole].type == bucketType::ESS) {
             return false;
         }
@@ -195,8 +204,9 @@ std::optional<size_t> HashTable::get(const string& key) const {
             // Return the key value
             return table[home].bucketValue;
         }
+        // If ESS, stop trying
         if (table[home].type == bucketType::ESS) {
-            return false;
+            return nullopt;
         }
         // If the key is not at the home index
         for (int i = 0; i < max - 1; i++) {
@@ -207,8 +217,9 @@ std::optional<size_t> HashTable::get(const string& key) const {
                 // Return the key value
                 return table[hole].bucketValue;
             }
+            // If ESS, stop trying
             if (table[hole].type == bucketType::ESS) {
-                return false;
+                return nullopt;
             }
         }
     }
@@ -359,15 +370,21 @@ size_t HashTable::probe(size_t home, int i) const {
     return (home + offsets[i]) % table.size();
 }
 
-vector <size_t> HashTable::offsetShuffle(size_t newCap) const {
+vector <size_t> HashTable::offsetShuffle(size_t newCap) {
+    // Make a new offsets vector
     vector <size_t> newOffsets;
+    // Set the vector size to cap - 1
     newOffsets.resize(newCap - 1);
+    // Add numbers to the vector up to the cap starting from 1
     for (int i = 0; i < newCap - 1; i++) {
         newOffsets[i] = i + 1;
     }
+    // I'm not sure what these next three lines actually do, but it ends with the vector being shuffled
     random_device rd;
     mt19937 g(rd());
+    // ReSharper disable once CppUseRangeAlgorithm
     shuffle(newOffsets.begin(), newOffsets.end(), g);
+    // Return shuffled offsets
     return newOffsets;
 }
 

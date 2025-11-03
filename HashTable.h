@@ -2,13 +2,14 @@
 * Name: Garry Francis
 * Project: HashTable
 *
-* This is the cpp file for the HashTable and HashTableBucket class. It contains the constructors
+* This is the header file for the HashTable and HashTableBucket class. It contains the constructors
 * and all the function declarations. This file includes: The HashTable constructor, the insert
-* function, the remove function, the contains function, the get function, the [] operator
-* override, the keys function, the alpha function, the capacity function, the size function,
-* the printMe function, the << operator overrides, the probe function, the HashTableBucket
-* constructors, the load function, the isEmpty function, and the hasher.
+* function, the resizeTable the remove function, the contains function, the get function,
+* the [] operator override, the keys function, the alpha function, the capacity function, the size
+* function, the printMe function, the << operator override, the probe function, the offsetShuffle
+* function, the HashTableBucket constructors, the load function, the isEmpty function.
 * -----------------------------------------------------------------------------------------*/
+#pragma once
 
 #include <optional>
 #include <string>
@@ -32,7 +33,7 @@ class HashTableBucket {
         HashTableBucket(const std::string& key, const size_t& value);
         // HashTableBucket function declarations
         void load(const std::string& key, const size_t& value);
-        bool isEmpty() const;
+        [[nodiscard]] bool isEmpty() const;
 };
 
 class HashTable {
@@ -43,21 +44,21 @@ class HashTable {
         size_t filled;
         size_t max;
         // HashTable constructor declaration
-        HashTable(size_t cap = 8);
+        explicit HashTable(size_t cap = 8);
         // HashTable function Declarations
         bool insert(const std::string& key, const size_t& value);
         bool remove(const std::string& key);
-        bool contains(const string& key) const;
-        optional<size_t> get(const string& key) const;
+        [[nodiscard]] bool contains(const string& key) const;
+        [[nodiscard]] optional<size_t> get(const string& key) const;
         size_t& operator[](const string& key);
-        vector<std::string> keys() const;
-        double alpha() const;
-        size_t capacity() const;
-        size_t size() const;
+        [[nodiscard]] vector<std::string> keys() const;
+        [[nodiscard]] double alpha() const;
+        [[nodiscard]] size_t capacity() const;
+        [[nodiscard]] size_t size() const;
         friend ostream& operator<<(ostream& os, const HashTable& ht);
-        size_t probe(size_t home, int i) const;
-        std::string printMe(int i) const;
-        vector <size_t> offsetShuffle(size_t newCap) const;
+        [[nodiscard]] size_t probe(size_t home, int i) const;
+        [[nodiscard]] std::string printMe(int i) const;
+        static vector <size_t> offsetShuffle(size_t newCap) ;
         void resizeTable();
         // Hasher declaration
         std::hash<std::string> hasher;
