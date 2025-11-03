@@ -14,9 +14,10 @@ int main() {
 
     ht.insert("world",3);
     ht.insert("hello", 2);
+    ht.insert("garbe", 4);
+    ht.insert("value", 5);
+    ht.insert("reszie", 6);
 
-
-    cout << ht;
 
     return 0;
 }

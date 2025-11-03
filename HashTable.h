@@ -33,7 +33,6 @@ class HashTableBucket {
         // HashTableBucket function declarations
         void load(const std::string& key, const size_t& value);
         bool isEmpty() const;
-        friend ostream& operator<<(ostream& os, const HashTableBucket& bucket);
 };
 
 class HashTable {
@@ -58,6 +57,8 @@ class HashTable {
         friend ostream& operator<<(ostream& os, const HashTable& ht);
         size_t probe(size_t home, int i) const;
         std::string printMe(int i) const;
+        vector <size_t> offsetShuffle(size_t newCap) const;
+        void resizeTable();
         // Hasher declaration
         std::hash<std::string> hasher;
 };

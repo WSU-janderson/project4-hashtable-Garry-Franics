@@ -13,6 +13,11 @@
 #include "HashTable.h"
 #include <exception>
 #include <string>
+#include <algorithm>
+#include <iostream>
+#include <iterator>
+#include <random>
+#include <vector>
 
 using namespace std;
 
@@ -29,6 +34,8 @@ HashTable::HashTable(size_t cap) {
     filled = 0;
     // Tracks capacity
     max = cap;
+    // Makes offsets vector
+    offsets = offsetShuffle(cap);
 }
 
 /**
@@ -43,6 +50,10 @@ bool HashTable::insert(const std::string& key, const size_t& value) {
     if (contains(key)) {
         return false;
     }
+    // If the table is half full it gets expanded
+    if (alpha() >= 0.5) {
+        resizeTable();
+    }
     // Hash the key
     size_t home = hasher(key) % max;
     // If the home index is open
@@ -51,13 +62,6 @@ bool HashTable::insert(const std::string& key, const size_t& value) {
         table[home].load(key, value);
         // Increase size counter
         filled++;
-        // If the table is full it gets expanded
-        if (alpha() >= 0.5) {
-            // Increase capacity counter
-            max *= 2;
-            // Increase capacity
-            table.resize(max);
-        }
         return true;
     }
     // You can't insert at the home index
@@ -70,19 +74,28 @@ bool HashTable::insert(const std::string& key, const size_t& value) {
             table[hole].load(key, value);
             // Increase size counter
             filled++;
-            // If the table is full it gets expanded
-            if (alpha() >= 0.5) {
-                // Increase capacity counter
-                max *= 2;
-                // Increase capacity
-                table.resize(max);
-            }
             return true;
         }
     }
     // I'm not sure that it's possible to reach this return but if it's not here I get a warning
     // and I don't like warnings
     return false;
+}
+
+void HashTable::resizeTable() {
+    // Increase capacity counter
+    max *= 2;
+    // Increase capacity
+    vector <HashTableBucket> oldTable = table;
+    offsets = offsetShuffle(max);
+    table.clear();
+    table.resize(max);
+    filled = 0;
+    for (int i = 0; i < oldTable.size(); i++) {
+        if (!oldTable[i].isEmpty()) {
+            this->insert(oldTable[i].bucketKey, oldTable[i].bucketValue);
+        }
+    }
 }
 
 /**
@@ -105,6 +118,9 @@ bool HashTable::remove(const std::string& key) {
             filled--;
             return true;
         }
+        if (table[home].type == bucketType::ESS) {
+            return false;
+        }
         // If the key is not at the home index
         for (int i = 0; i < max - 1; i++) {
             // Begin the probe
@@ -118,6 +134,9 @@ bool HashTable::remove(const std::string& key) {
                 // Decrease size counter
                 filled--;
                 return true;
+            }
+            if (table[hole].type == bucketType::ESS) {
+                return false;
             }
         }
     }
@@ -137,6 +156,9 @@ bool HashTable::contains(const string& key) const {
     if (table[home].bucketKey == key) {
         return true;
     }
+    if (table[home].type == bucketType::ESS) {
+        return false;
+    }
     // If the key is not at the home index
     for (int i = 0; i < max - 1; i++) {
         // Begin the probe
@@ -144,6 +166,9 @@ bool HashTable::contains(const string& key) const {
         // If the key is at the probed index
         if (table[hole].bucketKey == key) {
             return true;
+        }
+        if (table[hole].type == bucketType::ESS) {
+            return false;
         }
     }
     // The key was not in the table
@@ -170,6 +195,9 @@ std::optional<size_t> HashTable::get(const string& key) const {
             // Return the key value
             return table[home].bucketValue;
         }
+        if (table[home].type == bucketType::ESS) {
+            return false;
+        }
         // If the key is not at the home index
         for (int i = 0; i < max - 1; i++) {
             // Begin the probe
@@ -178,6 +206,9 @@ std::optional<size_t> HashTable::get(const string& key) const {
             if (table[hole].bucketKey == key) {
                 // Return the key value
                 return table[hole].bucketValue;
+            }
+            if (table[hole].type == bucketType::ESS) {
+                return false;
             }
         }
     }
@@ -324,9 +355,20 @@ ostream& operator<<(ostream& os, const HashTable& hashTable) {
     return os;
 }
 
-//TODO: make this semi-random probing
 size_t HashTable::probe(size_t home, int i) const {
-    return (home + i + 1) % table.size();
+    return (home + offsets[i]) % table.size();
+}
+
+vector <size_t> HashTable::offsetShuffle(size_t newCap) const {
+    vector <size_t> newOffsets;
+    newOffsets.resize(newCap - 1);
+    for (int i = 0; i < newCap - 1; i++) {
+        newOffsets[i] = i + 1;
+    }
+    random_device rd;
+    mt19937 g(rd());
+    shuffle(newOffsets.begin(), newOffsets.end(), g);
+    return newOffsets;
 }
 
 //BUCKET
@@ -383,18 +425,4 @@ bool HashTableBucket::isEmpty() const {
     }
     // Its normal, so not empty
     return false;
-}
-
-/**
-* The stream insertion operator could be overloaded to print the
-* bucket's contents. Or if preferred, you could write a print method
-* instead.
-*/
-
-//TODO: ask what this function actually does
-ostream& operator<<(ostream& os, const HashTableBucket& bucket) {
-    if (!bucket.isEmpty()) {
-        os << "Bucket: <" + bucket.bucketKey + ", " + to_string(bucket.bucketValue) + ">";
-    }
-    return os;
 }
