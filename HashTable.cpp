@@ -251,6 +251,10 @@ size_t& HashTable::operator[](const string& key) {
             // Return the key value
             return table[home].bucketValue;
         }
+        // If ESS, stop trying
+        if (table[home].type == bucketType::ESS) {
+            throw exception();
+        }
         // If the key is not at the home index
         for (int i = 0; i < max - 1; i++) {
             // Begin the probe
@@ -259,6 +263,10 @@ size_t& HashTable::operator[](const string& key) {
             if (table[hole].bucketKey == key) {
                 // Return the key value
                 return table[hole].bucketValue;
+            }
+            // If ESS, stop trying
+            if (table[home].type == bucketType::ESS) {
+                throw exception();
             }
         }
     }
